@@ -1,17 +1,15 @@
 '''
-pong made with python
 Michael Xilinas
+Pong in python
 '''
 
-import sys, os
+import os
 import time
 import turtle
 import random
 import threading
 from functools import partial
 from playsound import playsound
-
-os.chdir(sys._MEIPASS)
 
 # Global Variables
 FRAME_RATE = 60
@@ -112,7 +110,7 @@ number_sprites_cpu = NUMBER_SPRITES[:]
 number_sprites_player = NUMBER_SPRITES[:]
 last_frame_time = 0
 
-###FUNCTIONS###
+# Functions
 def quadrant(b):
     '''returns the direction of the ball's heading (quadrant 1-4)'''
     if b.heading() > 0 and b.heading() < 90:
@@ -124,13 +122,15 @@ def quadrant(b):
     elif b.heading() > 270 and b.heading() < 360:
         return 4
 
-###ARENA_PHYSICS_FUNCTIONS###
+### ARENA_PHYSICS_FUNCTIONS###
+
 def arenaCollision(b):
     '''returns true if the ball hits the top or bottom of arena'''
     return (
-    b.ycor() + BALL_HEIGHT >= ARENA_HEIGHT or 
-    b.ycor() - BALL_HEIGHT <= -ARENA_HEIGHT
+        b.ycor() + BALL_HEIGHT >= ARENA_HEIGHT or
+        b.ycor() - BALL_HEIGHT <= -ARENA_HEIGHT
     )
+
 
 def arenaReflectionAngle(q, b):
     '''returns the ball's reflection angle (for arena collisions)'''
@@ -143,6 +143,7 @@ def arenaReflectionAngle(q, b):
     elif q == 4:
         return 720 - b.heading() * 2
 
+
 def arenaReflections(b):
     '''enables collisions between the ball and the arena floor/cieling'''
     if arenaCollision(b):
@@ -151,12 +152,15 @@ def arenaReflections(b):
         else:
             b.lt(arenaReflectionAngle(quadrant(b), b))
 
-###PADDLE_PHYSICS_FUNCTIONS###
+### PADDLE_PHYSICS_FUNCTIONS###
+
+
 def playerCollision(p, c, b):
     '''returns true if the ball collides with the player'''
     if b.ycor() + BALL_HEIGHT >= p.ycor() - PADDLE_HEIGHT and b.ycor() - BALL_HEIGHT <= p.ycor() + PADDLE_HEIGHT:
         if b.xcor() >= p.xcor() - PADDLE_WIDTH and b.xcor() <= p.xcor() + PADDLE_WIDTH:
             return True
+
 
 def cpuCollision(p, c, b):
     '''returns true if the ball collides with the cpu'''
@@ -164,12 +168,14 @@ def cpuCollision(p, c, b):
         if b.xcor() >= c.xcor() - PADDLE_WIDTH and b.xcor() <= c.xcor() + PADDLE_WIDTH:
             return True
 
+
 def frontOfPaddle(p, c, b):
     '''returns the distance between the ball and the inner edge of either paddle'''
     if b.xcor() < 0:
         return p.xcor() + PADDLE_WIDTH - 1
     else:
         return c.xcor() - PADDLE_WIDTH + 1
+
 
 def pointUpOrDown(q, b):
     '''
@@ -183,9 +189,11 @@ def pointUpOrDown(q, b):
     else:
         return b.heading() - 270
 
+
 def paddleReflectionAngle():
     '''returns the ball's relfection angle (for paddle collisions)'''
     return random.randrange(35, 65)
+
 
 def playerReflection(p, c, b):
     '''enables collisions between the ball and the player'''
@@ -198,6 +206,7 @@ def playerReflection(p, c, b):
             b.rt(pointUpOrDown(quadrant(b), b))
             b.lt(paddleReflectionAngle())
 
+
 def cpuReflection(p, c, b):
     '''enables collisions between the ball and the cpu'''
     if cpuCollision(p, c, b):
@@ -209,7 +218,9 @@ def cpuReflection(p, c, b):
             b.rt(pointUpOrDown(quadrant(b), b))
             b.rt(paddleReflectionAngle())
 
-###BALL_PHYSICS_FUNCTIONS###
+### BALL_PHYSICS_FUNCTIONS###
+
+
 def dynamicBallSpeed(p, c, b):
     '''
     increases ball speed after every collision with a paddle
@@ -222,6 +233,7 @@ def dynamicBallSpeed(p, c, b):
     elif playerGoal(b) or cpuGoal(b):
         dynamic_ball_speed = BALL_SPEED
 
+
 def ballBehaviour(p, c, b):
     '''enables ball physics and mechanics'''
     dynamicBallSpeed(p, c, b)
@@ -229,27 +241,33 @@ def ballBehaviour(p, c, b):
     b.fd(dynamic_ball_speed)
     turtle.update()
 
-###CPU_AI_FUNCTIONS###
+### CPU_AI_FUNCTIONS###
+
+
 def ballAboveCpu(c, b):
     '''return True if the ball is above the cpu'''
     if b.ycor() > c.ycor():
         return True
+
 
 def ballBelowCpu(c, b):
     '''return True if the ball is below the cpu'''
     if b.ycor() < c.ycor():
         return True
 
+
 def paddleBelowCieling(p):
     '''returns True if a paddle is below the arena cieling'''
     if p.ycor() + PADDLE_HEIGHT < ARENA_HEIGHT:
         return True
 
+
 def paddleAboveFloor(p):
     '''returns True if a paddle is above the arena floor'''
     if p.ycor() - PADDLE_HEIGHT > -ARENA_HEIGHT:
         return True
-    
+
+
 def cpuLocomotion(c, b):
     '''
     moves the cpu up if the ball is above the cpu
@@ -261,14 +279,18 @@ def cpuLocomotion(c, b):
         elif ballBelowCpu(c, b) and paddleAboveFloor(c):
             c.bk(CPU_SPEED)
 
-###USER_INTERFACE_FUNCTIONS###
+### USER_INTERFACE_FUNCTIONS###
+
+
 def paddleUp(p):
     '''moves a given paddle up'''
     p.fd(PLAYER_SPEED)
 
+
 def paddleDown(p):
     '''moves a given paddle down'''
     p.fd(-PLAYER_SPEED)
+
 
 def playerController(s, p):
     '''allows the use of keybindings to control the player's movement'''
@@ -284,6 +306,7 @@ def playerController(s, p):
 
     s.listen()
 
+
 def player2Controller(s, c):
     '''allows the use of keybindings to control the cpu's movement'''
     if paddleBelowCieling(c):
@@ -298,24 +321,30 @@ def player2Controller(s, c):
 
     s.listen()
 
+
 def quitGame():
     '''closes the game window'''
     os._exit(0)
+
 
 def exitOnEscape():
     '''closes the game window if the user presses the quit key (defined in keybindings)'''
     turtle.onkey(quitGame, KEY_BINDINGS["quit"])
 
-###GAME_MECHANIC_FUNCTIONS###
+### GAME_MECHANIC_FUNCTIONS###
+
+
 def playerGoal(b):
     '''returns True if the ball has gone past the right side of the arena'''
     if b.xcor() - BALL_WIDTH > ARENA_WIDTH + PADDLE_WIDTH:
         return True
 
+
 def cpuGoal(b):
     '''returns True if the ball has gone past the left side of the arena'''
     if b.xcor() + BALL_WIDTH < -ARENA_WIDTH - PADDLE_WIDTH:
         return True
+
 
 def serve(b):
     '''resets ball position after a goal'''
@@ -325,6 +354,7 @@ def serve(b):
         b.home()
         b.seth(180)
 
+
 def scoreBoard(b, p_counter, c_counter):
     '''updates score sprite after every goal'''
     if playerGoal(b) and len(number_sprites_player) > 1:
@@ -333,15 +363,18 @@ def scoreBoard(b, p_counter, c_counter):
     elif cpuGoal(b) and len(number_sprites_cpu) > 1:
         c_counter.shape(number_sprites_cpu.pop(1))
 
+
 def player1Wins():
     '''returns true if the player reaches the score limit'''
     if len(number_sprites_player) == len(NUMBER_SPRITES) - SCORE_LIMIT:
         return True
 
+
 def player2Wins():
     '''returns true if the cpu reaches the score limit'''
     if len(number_sprites_cpu) == len(NUMBER_SPRITES) - SCORE_LIMIT:
         return True
+
 
 def flashTurtle(w):
     '''displays a given turtle for 3 seconds'''
@@ -350,14 +383,16 @@ def flashTurtle(w):
     time.sleep(3)
     w.hideturtle()
 
+
 def displayMultiplayerWinner(w):
     '''shows win message after a win (for multiplayer games)'''
     if player1Wins():
         w.shape(OBJECT_SPRITES['player1_win'])
     elif player2Wins():
         w.shape(OBJECT_SPRITES['player2_win'])
-    
+
     flashTurtle(w)
+
 
 def displaySingleplayerWinner(w):
     '''shows win message after win (for singleplayer games)'''
@@ -368,6 +403,7 @@ def displaySingleplayerWinner(w):
 
     flashTurtle(w)
 
+
 def playSingleplayerWinAudio():
     '''plays audio after a win in a singleplayer game'''
     if player1Wins():
@@ -375,15 +411,18 @@ def playSingleplayerWinAudio():
     elif player2Wins():
         playsound(SOUND_EFFECTS['lose'], False)
 
+
 def playMultiplayerWinAudio():
     '''plays audio after a win in a multiplayer game'''
     if player1Wins() or player2Wins():
         playsound(SOUND_EFFECTS['win'], False)
 
+
 def resetPaddlePosition(p, c):
     '''sets paddle positions to zero'''
     p.sety(0)
     c.sety(0)
+
 
 def unbindMultiplayerKeys():
     '''sets the keybindings to None for both paddles'''
@@ -392,10 +431,12 @@ def unbindMultiplayerKeys():
     turtle.onkeypress(None, KEY_BINDINGS['cpu_up'])
     turtle.onkeypress(None, KEY_BINDINGS['cpu_down'])
 
+
 def resetScoreBoard(p_counter, c_counter):
     '''sets the scoreboard sprites to zero'''
     p_counter.shape(NUMBER_SPRITES[0])
     c_counter.shape(NUMBER_SPRITES[0])
+
 
 def resetScore():
     '''restores the sprite list which resets the score'''
@@ -403,6 +444,7 @@ def resetScore():
     global number_sprites_cpu
     number_sprites_player = NUMBER_SPRITES[:]
     number_sprites_cpu = NUMBER_SPRITES[:]
+
 
 def multiplayerWin(p, c, p_counter, c_counter, w):
     '''mechanics for multiplayer wins'''
@@ -414,10 +456,12 @@ def multiplayerWin(p, c, p_counter, c_counter, w):
         displayMultiplayerWinner(w)
         resetScore()
 
+
 def unbindSinglePlayerKeys():
     '''sets the keybindings to None for one paddle'''
     turtle.onkeypress(None, KEY_BINDINGS['player_up'])
     turtle.onkeypress(None, KEY_BINDINGS['player_down'])
+
 
 def singleplayerWin(p, c, p_counter, c_counter, w):
     '''mechanics for singleplayer wins'''
@@ -428,11 +472,14 @@ def singleplayerWin(p, c, p_counter, c_counter, w):
         resetScoreBoard(p_counter, c_counter)
         displaySingleplayerWinner(w)
         resetScore()
-        
-###AUDIO_FUNCTIONS###
+
+### AUDIO_FUNCTIONS###
+
+
 def randomImpactSound():
     '''returns a random impact sound effect'''
     return random.choice(SOUND_EFFECTS['impacts'])
+
 
 def soundEffects(p, c, b):
     '''handles gameloop sound effects'''
@@ -447,13 +494,15 @@ def soundEffects(p, c, b):
 
     elif playerGoal(b):
         playsound(SOUND_EFFECTS['goal'])
-    
+
     elif cpuGoal(b):
         playsound(SOUND_EFFECTS['fail'])
+
 
 def randomSong():
     '''picks a random song and removes it from the playlist'''
     return playlist.pop(random.randrange(len(playlist)))
+
 
 def playMusic():
     '''plays a random song from the playlist'''
@@ -463,21 +512,27 @@ def playMusic():
         if len(playlist) == 0:
             playlist = MUSIC[:]
 
+
 def playCoinSound():
     playsound(SOUND_EFFECTS['coin'])
 
-###SETUP_FUNCTIONS###
+### SETUP_FUNCTIONS###
+
+
 def registerNumberSprites(s):
     for n in NUMBER_SPRITES:
         s.register_shape(n)
+
 
 def registerCoinSprites(s):
     for c in COIN_SPRITES:
         s.register_shape(c)
 
+
 def registerObjectSprites(s):
     for o in OBJECT_SPRITES.values():
         s.register_shape(o)
+
 
 def createScreen():
     s = turtle.Screen()
@@ -489,30 +544,36 @@ def createScreen():
     registerCoinSprites(s)
     return s
 
+
 def createPlayer():
     p = turtle.Turtle()
     p.shape(OBJECT_SPRITES['paddle'])
     return p
+
 
 def createPlayerScore():
     p_counter = turtle.Turtle()
     p_counter.shape(NUMBER_SPRITES[0])
     return p_counter
 
+
 def createCpu():
     c = turtle.Turtle()
     c.shape(OBJECT_SPRITES['paddle'])
     return c
+
 
 def setuCpuScore():
     c_counter = turtle.Turtle()
     c_counter.shape(NUMBER_SPRITES[0])
     return c_counter
 
+
 def createBall():
     b = turtle.Turtle()
     b.shape(OBJECT_SPRITES['ball'])
     return b
+
 
 def setupArena(p, c, b, p_counter, c_counter):
     '''sets the initial position of the game objects'''
@@ -533,6 +594,7 @@ def setupArena(p, c, b, p_counter, c_counter):
 
     b.penup()
 
+
 def createLine(color):
     '''creates a turtle for drawing arena lines'''
     l = turtle.Turtle()
@@ -540,6 +602,7 @@ def createLine(color):
     l.hideturtle()
     l.color(color)
     return l
+
 
 def createCoins():
     '''creates turtle objects and assigns them coin graphics'''
@@ -551,11 +614,13 @@ def createCoins():
         coin_turtles.append(coin)
     return coin_turtles
 
+
 def removeCoins(*coin_turtles):
     '''hides and deletes all coins'''
     for c in coin_turtles:
         c.hideturtle()
         del c
+
 
 def createWinBanner():
     '''creates a turtle for splash messages'''
@@ -563,7 +628,9 @@ def createWinBanner():
     w.hideturtle()
     return w
 
-###DRAW_FUNCTIONS###
+### DRAW_FUNCTIONS###
+
+
 def drawBoundaryBox(l):
     '''draws the square with arena height and width'''
     l.penup()
@@ -575,11 +642,13 @@ def drawBoundaryBox(l):
         l.fd(ARENA_HEIGHT * 2)
         l.rt(90)
 
+
 def drawArena():
     '''visualizes the arena borders'''
     l = createLine('black')
     drawBoundaryBox(l)
     del l
+
 
 def drawFieldMarker():
     '''draws the arena divider'''
@@ -594,7 +663,9 @@ def drawFieldMarker():
         l.fd(26)
     del l
 
-###INTRO_ANIMATION_FUNCTIONS###
+### INTRO_ANIMATION_FUNCTIONS###
+
+
 def playCoinAnimation(*coin_turtles):
     '''animates coin sprites'''
     for coin in coin_turtles:
@@ -603,13 +674,16 @@ def playCoinAnimation(*coin_turtles):
         time.sleep(.1)
         coin.hideturtle()
 
-###GAMELOOPS/MENU_FUNCTIONS###
+### GAMELOOPS/MENU_FUNCTIONS###
+
+
 def newGame(*coin_turtles):
     '''starts music and hides coin sprites'''
-    playsound('sounds/slot.wav')
+    playsound(SOUNDS + 'slot.wav')
     removeCoins(*coin_turtles)
     song = threading.Thread(target=playMusic)
     song.start()
+
 
 def baseGame(s, p, c, b, p_counter, c_counter, w):
     '''basic game physics and mechanics'''
@@ -621,6 +695,7 @@ def baseGame(s, p, c, b, p_counter, c_counter, w):
     cpuReflection(p, c, b)
     arenaReflections(b)
     exitOnEscape()
+
 
 def singlePlayer(s, p, c, b, p_counter, c_counter, w, *coin_turtles):
     '''includes base game and functions specific to singleplayer'''
@@ -637,7 +712,8 @@ def singlePlayer(s, p, c, b, p_counter, c_counter, w, *coin_turtles):
         if (elapsed_time < FRAME_TIME_TARGET - elapsed_time):
             time.sleep(FRAME_TIME_TARGET - elapsed_time)
         LAST_FRAME_TIME = time.time()
-        
+
+
 def multiplayer(s, p, c, b, p_counter, c_counter, w, *coin_turtles):
     '''includes base game and functions specific to multiplayer'''
     turtle.onkey(None, KEY_BINDINGS['multiplayer'])
@@ -653,16 +729,20 @@ def multiplayer(s, p, c, b, p_counter, c_counter, w, *coin_turtles):
         if (elapsed_time < FRAME_TIME_TARGET - elapsed_time):
             time.sleep(FRAME_TIME_TARGET - elapsed_time)
         LAST_FRAME_TIME = time.time()
-        
+
+
 def titleScreen(s, p, c, b, p_counter, c_counter, w, coin_turtles):
     '''intro screen, plays animation and allows the user to select game-modes'''
     while True:
-        turtle.onkey(partial(singlePlayer, s, p, c, b, p_counter, c_counter, w, *coin_turtles), KEY_BINDINGS['singleplayer'])
-        turtle.onkey(partial(multiplayer, s, p, c, b, p_counter, c_counter, w, *coin_turtles), KEY_BINDINGS['multiplayer'])
+        turtle.onkey(partial(singlePlayer, s, p, c, b, p_counter,
+                     c_counter, w, *coin_turtles), KEY_BINDINGS['singleplayer'])
+        turtle.onkey(partial(multiplayer, s, p, c, b, p_counter,
+                     c_counter, w, *coin_turtles), KEY_BINDINGS['multiplayer'])
         s.listen()
         playCoinAnimation(*coin_turtles)
         playCoinSound()
         exitOnEscape()
+
 
 def main():
     turtle.tracer(0, 0)
@@ -680,6 +760,8 @@ def main():
 
     turtle.update()
 
-    titleScreen(screen, player, cpu, ball, player_score, cpu_score, win_banner, coin_turtles)
+    titleScreen(screen, player, cpu, ball, player_score,
+                cpu_score, win_banner, coin_turtles)
+
 
 main()
