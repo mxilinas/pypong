@@ -122,7 +122,7 @@ def quadrant(b):
     elif b.heading() > 270 and b.heading() < 360:
         return 4
 
-### ARENA_PHYSICS_FUNCTIONS###
+### ARENA_PHYSICS_FUNCTIONS ###
 
 def arenaCollision(b):
     '''returns true if the ball hits the top or bottom of arena'''
@@ -152,8 +152,7 @@ def arenaReflections(b):
         else:
             b.lt(arenaReflectionAngle(quadrant(b), b))
 
-### PADDLE_PHYSICS_FUNCTIONS###
-
+### PADDLE_PHYSICS_FUNCTIONS ###
 
 def playerCollision(p, c, b):
     '''returns true if the ball collides with the player'''
@@ -218,7 +217,7 @@ def cpuReflection(p, c, b):
             b.rt(pointUpOrDown(quadrant(b), b))
             b.rt(paddleReflectionAngle())
 
-### BALL_PHYSICS_FUNCTIONS###
+### BALL_PHYSICS_FUNCTIONS ###
 
 
 def dynamicBallSpeed(p, c, b):
@@ -241,7 +240,7 @@ def ballBehaviour(p, c, b):
     b.fd(dynamic_ball_speed)
     turtle.update()
 
-### CPU_AI_FUNCTIONS###
+### CPU_AI_FUNCTIONS ###
 
 
 def ballAboveCpu(c, b):
@@ -279,7 +278,7 @@ def cpuLocomotion(c, b):
         elif ballBelowCpu(c, b) and paddleAboveFloor(c):
             c.bk(CPU_SPEED)
 
-### USER_INTERFACE_FUNCTIONS###
+### USER_INTERFACE_FUNCTIONS ###
 
 
 def paddleUp(p):
@@ -331,7 +330,7 @@ def exitOnEscape():
     '''closes the game window if the user presses the quit key (defined in keybindings)'''
     turtle.onkey(quitGame, KEY_BINDINGS["quit"])
 
-### GAME_MECHANIC_FUNCTIONS###
+### GAME_MECHANIC_FUNCTIONS ###
 
 
 def playerGoal(b):
@@ -473,7 +472,7 @@ def singleplayerWin(p, c, p_counter, c_counter, w):
         displaySingleplayerWinner(w)
         resetScore()
 
-### AUDIO_FUNCTIONS###
+### AUDIO_FUNCTIONS ###
 
 
 def randomImpactSound():
@@ -516,7 +515,7 @@ def playMusic():
 def playCoinSound():
     playsound(SOUND_EFFECTS['coin'])
 
-### SETUP_FUNCTIONS###
+### SETUP_FUNCTIONS ###
 
 
 def registerNumberSprites(s):
@@ -628,7 +627,7 @@ def createWinBanner():
     w.hideturtle()
     return w
 
-### DRAW_FUNCTIONS###
+### DRAW_FUNCTIONS ###
 
 
 def drawBoundaryBox(l):
@@ -663,7 +662,7 @@ def drawFieldMarker():
         l.fd(26)
     del l
 
-### INTRO_ANIMATION_FUNCTIONS###
+### INTRO_ANIMATION_FUNCTIONS ###
 
 
 def playCoinAnimation(*coin_turtles):
@@ -674,7 +673,7 @@ def playCoinAnimation(*coin_turtles):
         time.sleep(.1)
         coin.hideturtle()
 
-### GAMELOOPS/MENU_FUNCTIONS###
+### GAMELOOPS/MENU_FUNCTIONS ###
 
 
 def newGame(*coin_turtles):

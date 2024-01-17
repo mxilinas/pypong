@@ -3,9 +3,14 @@ Made with Tkinter and Turtle.
 
 ![](images/title.png)
 
-# Quick Start
+## Quick Start
 
-# Controls
+	git clone https://github.com/mxilinas/pypong.git
+	cd pypong
+	pip install -r requirements.txt
+	python pong.py
+
+## Controls
 
 - Press "1" for single player
 - Press "2" for multiplayer
